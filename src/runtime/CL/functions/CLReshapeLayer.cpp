@@ -25,6 +25,7 @@
 
 #include "arm_compute/core/CL/ICLTensor.h"
 #include "arm_compute/core/CL/kernels/CLReshapeLayerKernel.h"
+#include "arm_compute/runtime/CL/CLScheduler.h"
 #include "support/ToolchainSupport.h"
 
 using namespace arm_compute;
@@ -32,6 +33,10 @@ using namespace arm_compute;
 void CLReshapeLayer::configure(const ICLTensor *input, ICLTensor *output)
 {
     auto k = arm_compute::support::cpp14::make_unique<CLReshapeLayerKernel>();
+    k->set_target(CLScheduler::get().target());
     k->configure(input, output);
     _kernel = std::move(k);
+
+    // Tune kernels
+    CLScheduler::get().tune_kernel_static(*_kernel);
 }

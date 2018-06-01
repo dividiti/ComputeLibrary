@@ -57,6 +57,19 @@ public:
     // Inherited methods overridden:
     void run(const Window &window, cl::CommandQueue &queue) override;
 
+    /**
+     * Provides access to input tensor.
+     *
+     * @return Pointer to input tensor.
+     */
+    const ICLTensor* input() const { return _input; }
+
+    /**
+     * Provides access to output tensor.
+     *
+     * @return Pointer to output tensor.
+     */
+    const ICLTensor* output() const { return _output; }
 private:
     const ICLTensor *_input;  /**< Source tensor */
     ICLTensor       *_output; /**< Destination tensor */

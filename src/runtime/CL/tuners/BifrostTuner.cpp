@@ -124,6 +124,27 @@ void tune_direct_convolution_kernel(CLDirectConvolutionLayerKernel &k)
         k.set_lws_hint(lws_hint);
     }
 }
+
+/** Tunes a @ref CLReshapeLayerKernel for a bifrost target
+ *
+ * @param[in] k Kernels to tune
+ */
+void tune_reshape_kernel(CLReshapeLayerKernel &k)
+{
+    cl::NDRange lws_hint = k.lws_hint();
+
+    const GPUTarget    gpu_target    = k.get_target();
+    const DataType     dt            = k.input()->info()->data_type();
+
+    std::cout << "??? TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE \n";
+
+    if(gpu_target_is_in(gpu_target, GPUTarget::G71, GPUTarget::G72) && (dt == DataType::F32))
+    {
+        std::cout << "TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE TUNE \n";
+
+        k.set_lws_hint(lws_hint);
+    }
+}
 } // namespace
 
 void BifrostTuner::tune_kernel_static(ICLKernel &kernel)
@@ -132,6 +153,10 @@ void BifrostTuner::tune_kernel_static(ICLKernel &kernel)
     if(dynamic_cast<CLDirectConvolutionLayerKernel *>(&kernel) != nullptr)
     {
         tune_direct_convolution_kernel(*utils::cast::polymorphic_downcast<CLDirectConvolutionLayerKernel *>(&kernel));
+    }
+    else if(dynamic_cast<CLReshapeLayerKernel *>(&kernel) != nullptr)
+    {
+        tune_reshape_kernel(*utils::cast::polymorphic_downcast<CLReshapeLayerKernel *>(&kernel));
     }
 }
 
